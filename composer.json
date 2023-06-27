@@ -1,0 +1,48 @@
+{
+  "name": "fwolfsjaeger/doctrine-cockroachdb-bundle",
+  "type": "library",
+  "description": "Doctrine DBAL CockroachDB Driver Bundle for Symfony",
+  "homepage": "https://github.com/fwolfsjaeger/doctrine-cockroachdb-bundle",
+  "license": "MIT",
+  "version": "0.7.0",
+  "keywords": [
+    "pdo_pgsql",
+    "pdo",
+    "cockroach",
+    "cockroachdb",
+    "doctrine",
+    "doctrine-cockroachdb",
+    "doctrine-cockroachdb-bundle",
+    "symfony"
+  ],
+  "minimum-stability": "stable",
+  "authors": [
+    {
+      "name": "Florian Wolfsjaeger",
+      "email": "florian@wolfsjaeger.at"
+    }
+  ],
+  "require": {
+    "php": "^8.0",
+    "fwolfsjaeger/doctrine-cockroachdb": "^0.7",
+    "doctrine/doctrine-bundle": "^2.10",
+    "symfony/dependency-injection": "^6.0|6.1|6.2|6.3"
+  },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.17",
+        "phpstan/phpstan": "^1.10",
+        "squizlabs/php_codesniffer": "^3.7"
+    },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "composer/package-versions-deprecated": true
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "DoctrineCockroachDB\\": "src"
+    }
+  }
+}
