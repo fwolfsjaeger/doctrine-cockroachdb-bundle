@@ -1,7 +1,7 @@
-[![Latest Stable Version](http://poser.pugx.org/fwolfsjaeger/doctrine-cockroachdb/v)](https://packagist.org/packages/fwolfsjaeger/doctrine-cockroachdb)
-[![Total Downloads](http://poser.pugx.org/fwolfsjaeger/doctrine-cockroachdb/downloads)](https://packagist.org/packages/fwolfsjaeger/doctrine-cockroachdb)
-[![PHP Version Require](http://poser.pugx.org/fwolfsjaeger/doctrine-cockroachdb/require/php)](https://packagist.org/packages/fwolfsjaeger/doctrine-cockroachdb)
-[![License](http://poser.pugx.org/fwolfsjaeger/doctrine-cockroachdb/license)](https://packagist.org/packages/fwolfsjaeger/doctrine-cockroachdb)
+[![Latest Stable Version](http://poser.pugx.org/fwolfsjaeger/doctrine-cockroachdb-bundle/v)](https://packagist.org/packages/fwolfsjaeger/doctrine-cockroachdb-bundle)
+[![Total Downloads](http://poser.pugx.org/fwolfsjaeger/doctrine-cockroachdb-bundle/downloads)](https://packagist.org/packages/fwolfsjaeger/doctrine-cockroachdb-bundle)
+[![PHP Version Require](http://poser.pugx.org/fwolfsjaeger/doctrine-cockroachdb-bundle/require/php)](https://packagist.org/packages/fwolfsjaeger/doctrine-cockroachdb-bundle)
+[![License](http://poser.pugx.org/fwolfsjaeger/doctrine-cockroachdb-bundle/license)](https://packagist.org/packages/fwolfsjaeger/doctrine-cockroachdb-bundle)
 
 # CockroachDB Driver Bundle for Symfony
 
@@ -41,33 +41,6 @@ doctrine:
         sslcert: <path-to-user.crt>
         sslkey: <path-to-user.key>
         driver: crdb
-```
-
-## Unit testing
-Start an insecure single-node instance:
-```sh
-cockroach start-single-node
-  --store='type=mem,size=1GB' \
-  --log='sinks: {stderr: {channels: [DEV]}}' \
-  --listen-addr=127.0.0.1:26257 \
-  --insecure \
-  --accept-sql-without-tls
-```
-
-Connect to CockroachDB:
-```sh
-cockroach sql --host=127.0.0.1:26257 --insecure
-```
-
-Create the user & database for the tests:
-```postgresql
-CREATE USER "doctrine_tests";
-CREATE DATABASE doctrine_tests OWNER "doctrine_tests";
-USE doctrine_tests;
-CREATE SCHEMA doctrine_tests AUTHORIZATION "doctrine_tests";
-ALTER DATABASE doctrine_tests SET search_path = doctrine_tests;
-GRANT ALL PRIVILEGES ON DATABASE doctrine_tests TO "doctrine_tests";
-GRANT ALL PRIVILEGES ON SCHEMA doctrine_tests TO "doctrine_tests";
 ```
 
 ## License
