@@ -13,12 +13,10 @@ use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\MalformedDsnException;
 use Doctrine\DBAL\Tools\DsnParser;
 use DoctrineCockroachDB\Driver\CockroachDBDriver;
-use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 
 /**
  * @psalm-import-type Params from DriverManager
  */
-#[AsDecorator(decorates: 'doctrine.dbal.connection_factory')]
 class ConnectionFactory
 {
     private const CRDB_DRIVER_ALIASES = ['crdb', 'pdo-crdb'];

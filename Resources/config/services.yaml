@@ -1,0 +1,4 @@
+services:
+    DoctrineCockroachDB\ConnectionFactory:
+        decorates: 'doctrine.dbal.connection_factory'
+        arguments: ['@.inner']
