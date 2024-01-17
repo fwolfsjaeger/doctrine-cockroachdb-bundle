@@ -26,7 +26,7 @@
         "php": "^8.0",
         "fwolfsjaeger/doctrine-cockroachdb": "^0.8",
         "doctrine/doctrine-bundle": "^2.10",
-        "symfony/dependency-injection": "^6.0|6.1|6.2|6.3"
+        "symfony/dependency-injection": "^6.0|6.1|6.2|6.3|^7.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
