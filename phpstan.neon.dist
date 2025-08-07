@@ -1,5 +1,6 @@
 parameters:
     level: 8
-    phpVersion: 80000
+    treatPhpDocTypesAsCertain: false
+    reportMaybesInMethodSignatures: false
     paths:
         - src
