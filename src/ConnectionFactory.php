@@ -10,17 +10,19 @@ use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Exception\DriverRequired;
 use Doctrine\DBAL\Exception\MalformedDsnException;
 use Doctrine\DBAL\Tools\DsnParser;
 use DoctrineCockroachDB\Driver\CockroachDBDriver;
 
 /**
  * @psalm-import-type Params from DriverManager
+ * @noinspection PhpUnused
  */
 class ConnectionFactory
 {
     private const CRDB_DRIVER_ALIASES = ['crdb', 'pdo-crdb'];
-    private const DRIVER_SCHEME_ALIASES = [
+    private const DEFAULT_SCHEME_MAP = [
         'db2' => 'ibm_db2',
         'mssql' => 'pdo_sqlsrv',
         'mysql' => 'pdo_mysql',
@@ -32,10 +34,13 @@ class ConnectionFactory
         'sqlite3' => 'pdo_sqlite',
     ];
 
+    private readonly DsnParser $dsnParser;
+
     public function __construct(
-        private DoctrineBundle\ConnectionFactory $decorated,
+        private readonly DoctrineBundle\ConnectionFactory $decorated,
+        DsnParser|null $dsnParser = null,
     ) {
-        // just for constructor property promotion
+        $this->dsnParser = $dsnParser ?? new DsnParser(self::DEFAULT_SCHEME_MAP);
     }
 
     /**
@@ -50,18 +55,18 @@ class ConnectionFactory
         }
 
         try {
-            $dsnParser = new DsnParser(self::DRIVER_SCHEME_ALIASES);
-            $parsedParams = $dsnParser->parse($params['url']);
+            $parsedParams = $this->dsnParser->parse($params['url']);
         } catch (MalformedDsnException $e) {
-            throw new Exception('Malformed parameter "url".', 0, $e);
+            throw new MalformedDsnException('Malformed parameter "url".', 0, $e);
         }
 
-        if (!empty($parsedParams['driver']) && in_array($parsedParams['driver'], self::CRDB_DRIVER_ALIASES, true)) {
+        if (
+            isset($parsedParams['driver'])
+            && in_array($parsedParams['driver'], self::CRDB_DRIVER_ALIASES, true)
+        ) {
             $parsedParams['driver'] = 'pdo_pgsql';
             $parsedParams['driverClass'] = CockroachDBDriver::class;
-        }
-
-        if (isset($parsedParams['driver'])) {
+        } elseif (isset($parsedParams['driver'])) {
             // The requested driver from the URL scheme takes precedence
             // over the default custom driver from the connection parameters (if any).
             unset($params['driverClass']);
@@ -72,7 +77,7 @@ class ConnectionFactory
         // If a schemaless connection URL is given, we require a default driver or default custom driver
         // as connection parameter.
         if (!isset($params['driverClass']) && !isset($params['driver'])) {
-            throw Exception::driverRequired($params['url']);
+            throw DriverRequired::new($params['url']);
         }
 
         unset($params['url']);
@@ -81,18 +86,38 @@ class ConnectionFactory
     }
 
     /**
-     * @param array<string, string> $mappingTypes
+     * @param EventManager|array<string, string>|null $eventManagerOrMappingTypes
+     * @param array<string, string> $deprecatedMappingTypes
      * @psalm-param Params $params
      * @throws Exception
      */
     public function createConnection(
         array $params,
-        ?Configuration $config = null,
-        ?EventManager $eventManager = null,
-        array $mappingTypes = [],
+        Configuration|null $config = null,
+        EventManager|array|null $eventManagerOrMappingTypes = [],
+        array $deprecatedMappingTypes = [],
     ): Connection {
         $params = $this->parseDatabaseUrl($params);
 
-        return $this->decorated->createConnection($params, $config, $eventManager, $mappingTypes);
+        if (null !== $eventManagerOrMappingTypes) {
+            return $this->decorated->createConnection(
+                params: $params,
+                config: $config,
+                eventManagerOrMappingTypes: $eventManagerOrMappingTypes,
+            );
+        }
+
+        if ([] !== $deprecatedMappingTypes) {
+            return $this->decorated->createConnection(
+                params: $params,
+                config: $config,
+                deprecatedMappingTypes: $deprecatedMappingTypes,
+            );
+        }
+
+        return $this->decorated->createConnection(
+            params: $params,
+            config: $config,
+        );
     }
 }
