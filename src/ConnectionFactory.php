@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DoctrineCockroachDB;
 
 use Doctrine\Bundle\DoctrineBundle;
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -38,7 +37,7 @@ class ConnectionFactory
 
     public function __construct(
         private readonly DoctrineBundle\ConnectionFactory $decorated,
-        DsnParser|null $dsnParser = null,
+        ?DsnParser $dsnParser = null,
     ) {
         $this->dsnParser = $dsnParser ?? new DsnParser(self::DEFAULT_SCHEME_MAP);
     }
@@ -86,32 +85,22 @@ class ConnectionFactory
     }
 
     /**
-     * @param EventManager|array<string, string>|null $eventManagerOrMappingTypes
-     * @param array<string, string> $deprecatedMappingTypes
+     * @param array<string, string> $mappingTypes
      * @psalm-param Params $params
      * @throws Exception
      */
     public function createConnection(
         array $params,
-        Configuration|null $config = null,
-        EventManager|array|null $eventManagerOrMappingTypes = [],
-        array $deprecatedMappingTypes = [],
+        ?Configuration $config = null,
+        array $mappingTypes = [],
     ): Connection {
         $params = $this->parseDatabaseUrl($params);
 
-        if (null !== $eventManagerOrMappingTypes) {
+        if (null !== $mappingTypes) {
             return $this->decorated->createConnection(
                 params: $params,
                 config: $config,
-                eventManagerOrMappingTypes: $eventManagerOrMappingTypes,
-            );
-        }
-
-        if ([] !== $deprecatedMappingTypes) {
-            return $this->decorated->createConnection(
-                params: $params,
-                config: $config,
-                deprecatedMappingTypes: $deprecatedMappingTypes,
+                mappingTypes: $mappingTypes,
             );
         }
 
